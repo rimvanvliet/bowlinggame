@@ -1,4 +1,4 @@
-package io.vliet.van
+package vliet.io
 
 /**
   * Created by ruud on 11/12/2016.
@@ -9,17 +9,14 @@ class BowlingGame {
 
   private var bonus1: Option[Int] = None
   private var bonus2: Option[Int] = None
-  private def bonusIsPlayed(bonus: Option[Int]): Boolean = bonus match {
-    case Some(pins) => true
-    case None => false
-  }
+  private def isPlayed(bonus: Option[Int]): Boolean = bonus.isDefined
 
   private def gamefinished = {
     frames.size == 10 &&
       frames.head.frameFinished &&
       ( ! frames.head.spare && ! frames.head.strike ||
-        frames.head.spare && bonusIsPlayed(bonus1) ||
-        frames.head.strike && bonusIsPlayed(bonus2) )
+        frames.head.spare && isPlayed(bonus1) ||
+        frames.head.strike && isPlayed(bonus2) )
   }
 
   case class Frame(roll1: Int, var roll2: Option[Int] = None) {
@@ -36,14 +33,14 @@ class BowlingGame {
   }
 
   def roll(pins: Int) {
-    require(! gamefinished )
-    require(pins >= 0 && pins <= 10)
+    require(! gamefinished, "Rolls for a finished game are not allowed")
+    require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
     if (frames.size > 0 && !frames.head.frameFinished) {
-      require(pins <= 10 - frames.head.roll1)
+      require(pins <= 10 - frames.head.roll1, "Number of pins within 1 frame must not exceed 10")
       frames.head.roll2 = Some(pins)
     } else if (frames.size < 10) {
       frames = Frame(pins) :: frames
-    } else if (!bonusIsPlayed(bonus1)) {
+    } else if (!isPlayed(bonus1)) {
       bonus1 = Some(pins)
     } else {
       bonus2 = Some(pins)

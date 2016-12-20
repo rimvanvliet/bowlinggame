@@ -1,14 +1,12 @@
-package test.scala.io.vliet.van
+package test.scala.vliet.io
 
 /**
   * Created by ruud on 11/12/2016.
   */
 
 
-import io.vliet.van.BowlingGame
+import vliet.io.BowlingGame
 import org.scalatest.{Matchers, WordSpec}
-
-import scala.Some
 
 class BowlingGameSpec extends WordSpec with Matchers {
 
@@ -19,6 +17,14 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.frames.head.roll1 should be (4)
     }
   }
+
+  "Number of pins in a roll" should {
+    "be between 0 and 10" in {
+      val game = new BowlingGame
+      intercept[IllegalArgumentException] { game.roll(11) }
+    }
+  }
+
   "Second roll" should {
     "set pins as roll2 to the last rolls element" in {
       val game = new BowlingGame
@@ -26,6 +32,12 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(2)
       game.frames.head.roll1 should be(4)
       game.frames.head.roll2.getOrElse(0) should be (2)
+    }
+    "not pass 10 pins for a single Frame" in {
+      val game = new BowlingGame
+      game.roll(8)
+      intercept[IllegalArgumentException] { game.roll(3) }
+
     }
   }
 
@@ -62,9 +74,6 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(10)
       game.frames.head.roll1 should be(10)
     }
-  }
-
-  it should {
     "add next two rolls (not strikes) to the score" in {
       val game = new BowlingGame
       game.roll(10)
@@ -72,9 +81,6 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(2)
       game.score should be((10 + 1 + 2) + (1 + 2))
     }
-  }
-
-  it should {
     "add next two rolls (strike and not strike) to the score" in {
       val game = new BowlingGame
       game.roll(10)
@@ -85,10 +91,7 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(4)
       game.score should be((10 + 10 + 1) + (10 + 1 + 2) + (1 + 2) + (3 + 4))
     }
-  }
-
-  it should {
-    "add next two rolls (both strikes) to the score" in {
+   "add next two rolls (both strikes) to the score" in {
       val game = new BowlingGame
       game.roll(10)
       game.roll(10)
@@ -97,9 +100,6 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(3)
       game.score should be((10 + 10 + 10) + (10 + 10 + 2) + (10 + 2 + 3) + (2 + 3))
     }
-  }
-
-  it should {
     "not add additional rolls if they were not played" in {
       val game = new BowlingGame
       game.roll(1)
@@ -120,10 +120,7 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(2)
       game.score should be((9 + 1 + 7) + (7 + 3 + 1) + (1 + 2))
     }
-  }
-
-  it should {
-    "not add additional roll if it was not played" in {
+   "not add additional roll if it was not played" in {
       val game = new BowlingGame
       game.roll(1)
       game.roll(1)
@@ -142,9 +139,6 @@ class BowlingGameSpec extends WordSpec with Matchers {
       game.roll(10)
       game.score should be(30)
     }
-  }
-
-  it should {
     "add one roll for spare" in {
       val game = new BowlingGame
       (1 to 18).foreach(i => game.roll(0))
@@ -160,6 +154,22 @@ class BowlingGameSpec extends WordSpec with Matchers {
       val game = new BowlingGame
       (1 to 12).foreach(i => game.roll(10))
       game.score should be(300)
+    }
+  }
+
+  "Unfinished perfect game" should {
+    "score 290 for 11 strikes (10 regular and 1 bonus, 1 bonus to go)" in {
+      val game = new BowlingGame
+      (1 to 11).foreach(i => game.roll(10))
+      game.score should be (290)
+    }
+  }
+
+  "A roll in finished game" should {
+    "not be aloowed" in {
+      val game = new BowlingGame
+      (1 to 12).foreach(i => game.roll(10))
+      intercept[IllegalArgumentException] { game.roll(1) }
     }
   }
 }
