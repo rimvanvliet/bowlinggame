@@ -14,7 +14,7 @@ object BowlingGameFun {
     scoreAcc(rolls, 0, 10)
   }
 
-  def scoreAcc(rolls: List[Roll], acc: Int, frames: Int): Int = {
+  private def scoreAcc(rolls: List[Roll], acc: Int, frames: Int): Int = {
     if (frames == 0) acc
     else rolls match {
       case Nil => acc
