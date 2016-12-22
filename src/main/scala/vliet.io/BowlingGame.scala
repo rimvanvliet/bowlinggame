@@ -1,5 +1,7 @@
 package vliet.io
 
+import scala.annotation.tailrec
+
 /**
   * Created by ruud on 11/12/2016.
   */

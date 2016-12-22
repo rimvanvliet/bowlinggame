@@ -1,11 +1,10 @@
-package test.scala.vliet.io
+package vliet.io
 
 /**
   * Created by ruud on 11/12/2016.
   */
 
 
-import vliet.io.BowlingGame
 import org.scalatest.{Matchers, WordSpec}
 
 class BowlingGameSpec extends WordSpec with Matchers {
@@ -150,7 +149,7 @@ class BowlingGameSpec extends WordSpec with Matchers {
   }
 
   "Perfect game" should {
-    "score 300 for 12 strikes (12 regular and 2 bonus)" in {
+    "score 300 for 12 strikes (10 regular and 2 bonus)" in {
       val game = new BowlingGame
       (1 to 12).foreach(i => game.roll(10))
       game.score should be(300)
