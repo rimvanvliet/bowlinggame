@@ -24,14 +24,8 @@ class BowlingGame {
   case class Frame(roll1: Int, var roll2: Option[Int] = None) {
     def sum = roll1 + roll2.getOrElse(0)
     val strike = roll1 == 10;
-    def spare = roll2 match {
-      case Some(pins) => roll1 + pins == 10
-      case None => false
-    }
-    def frameFinished = roll2 match {
-      case Some(pins) => true
-      case None => strike
-    }
+    def spare = !strike && sum == 10
+    def frameFinished = strike || roll2.isDefined
   }
 
   def roll(pins: Int) {
