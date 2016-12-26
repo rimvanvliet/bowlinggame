@@ -38,7 +38,9 @@ object BowlingGameDrape {
     def acc(frames: Seq[Frame], score: Int, frameCount: Int): Int = {
       println(f"frameCount: $frameCount score: ${score} Frames: $frames, ")
       frames match {
-        case Nil => score
+        case Nil =>
+          require(frameCount <=10, "Rolls for a finished game are not allowed")
+          score
         case Strike() +: y +: z +: Nil if frameCount == 9 => score + 10 + y.score + z.score
         case Strike() +: y +: Nil if frameCount == 9 => score + 10 + y.score
         case Spare(_, _) +: y +: Nil if frameCount == 9 => score + 10 + y.score
