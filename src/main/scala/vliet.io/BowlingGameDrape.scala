@@ -23,7 +23,7 @@ object BowlingGameDrape {
   def score(rolls: List[Roll]): Int = {
     require(rolls.forall(r => r >= 0 && r <= 10), "Number of pins must be between 0 and 10")
 
-    val frames = rolls.foldLeft((Vector.empty[Frame], Option.empty[Roll])) { case ((framesAcc, unassignedRoll), roll) =>
+    val frames: Seq[Frame] = rolls.foldLeft((Vector.empty[Frame], Option.empty[Roll])) { case ((framesAcc, unassignedRoll), roll) =>
       unassignedRoll match {
         case None if roll == 10 => (framesAcc :+ Frame(roll), None)
         case None => (framesAcc, Some(roll))
