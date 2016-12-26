@@ -6,12 +6,13 @@ import scala.annotation.tailrec
   * Created by ruud on 11/12/2016.
   */
 class BowlingGame {
+  type Roll = Int
 
   var frames: List[Frame] = List[Frame]()
 
-  private var bonus1: Option[Int] = None
-  private var bonus2: Option[Int] = None
-  private def isPlayed(bonus: Option[Int]): Boolean = bonus.isDefined
+  private var bonus1: Option[Roll] = None
+  private var bonus2: Option[Roll] = None
+  private def isPlayed(bonus: Option[Roll]): Boolean = bonus.isDefined
 
   private def gamefinished = {
     frames.size == 10 &&
@@ -21,14 +22,14 @@ class BowlingGame {
         frames.head.strike && isPlayed(bonus2) )
   }
 
-  case class Frame(roll1: Int, var roll2: Option[Int] = None) {
+  case class Frame(roll1: Roll, var roll2: Option[Roll] = None) {
     def sum = roll1 + roll2.getOrElse(0)
     val strike = roll1 == 10;
     def spare = !strike && sum == 10
     def frameFinished = strike || roll2.isDefined
   }
 
-  def roll(pins: Int) {
+  def roll(pins: Roll) {
     require(! gamefinished, "Rolls for a finished game are not allowed")
     require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
     if (frames.size > 0 && !frames.head.frameFinished) {
@@ -44,7 +45,7 @@ class BowlingGame {
   }
 
   def score: Int = {
-    def sumScore(frames: List[Frame], bonus: (Int, Int)): Int = frames match {
+    def sumScore(frames: List[Frame], bonus: (Roll, Roll)): Int = frames match {
       case Nil => 0
       case x :: xs => x.sum +
         { if (x.spare || x.strike) bonus._1 else 0 } +
