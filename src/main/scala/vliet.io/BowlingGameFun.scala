@@ -8,7 +8,7 @@ class BowlingGameFun {
 
   type Roll = Int
 
-  var rolls: List[Roll] = List.empty[Roll]
+  private var rolls: List[Roll] = List.empty[Roll]
   def roll(pins: Roll): Unit = {
     require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
     rolls = rolls :+ pins
