@@ -3,14 +3,19 @@ package vliet.io
 /**
   * Created by ruud on 21/12/2016.
   *
-  * Pure functional implementation
   */
-object BowlingGameFun {
+class BowlingGameFun {
 
   type Roll = Int
 
-  def score(rolls: List[Roll]): Int = {
-    require(rolls.forall(r => r >= 0 && r <= 10), "Number of pins must be between 0 and 10")
+  var rolls: List[Roll] = List.empty[Roll]
+  def roll(pins: Roll): Unit = {
+    require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
+    rolls = rolls :+ pins
+  }
+
+  def score(): Int = {
+    println(rolls)
     scoreAcc(rolls, 0, 10)
   }
 

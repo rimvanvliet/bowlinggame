@@ -9,100 +9,134 @@ import org.scalatest.{Matchers, WordSpec}
 
 class BowlingGameFunSpec extends WordSpec with Matchers {
 
-
   "Number of pins in a roll" should {
-    "be less or equal to 10" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(11))
-      }
-    }
-    "be more or equal to 0" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(-1))
-      }
+    "be between 0 and 10" in {
+      val game = new BowlingGameFun
+      intercept[IllegalArgumentException] { game.roll(11) }
     }
   }
-  "Number of pins in a frame" should {
-    "be less or equal to 10" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(8, 3))
-      }
+
+  "Second roll" should {
+    "not pass 10 pins for a single Frame" in {
+      val game = new BowlingGameFun
+      game.roll(8)
+      game.roll(3)
+      intercept[IllegalArgumentException] { game.score() }
+
     }
   }
 
   "Score" should {
     "be sum of all roles" in {
-      BowlingGameFun.score(List(1, 2, 3, 4, 5, 4)) should be(1 + 2 + 3 + 4 + 5 + 4)
+      val game = new BowlingGameFun
+      game.roll(1)
+      game.roll(2)
+      game.roll(3)
+      game.roll(4)
+      game.roll(5)
+      game.roll(4)
+      game.score should be(1 + 2 + 3 + 4 + 5 + 4)
     }
   }
 
   "Strike" should {
     "add next two rolls (not strikes) to the score" in {
-      BowlingGameFun.score(List(10, 1, 2)) should be((10 + 1 + 2) + (1 + 2))
+      val game = new BowlingGameFun
+      game.roll(10)
+      game.roll(1)
+      game.roll(2)
+      game.score should be((10 + 1 + 2) + (1 + 2))
     }
     "add next two rolls (strike and not strike) to the score" in {
-      BowlingGameFun.score(List(10, 10, 1, 2, 3, 4)) should be((10 + 10 + 1) + (10 + 1 + 2) + (1 + 2) + (3 + 4))
+      val game = new BowlingGameFun
+      game.roll(10)
+      game.roll(10)
+      game.roll(1)
+      game.roll(2)
+      game.roll(3)
+      game.roll(4)
+      game.score should be((10 + 10 + 1) + (10 + 1 + 2) + (1 + 2) + (3 + 4))
     }
     "add next two rolls (both strikes) to the score" in {
-      BowlingGameFun.score(List(10, 10, 10, 2, 3)) should be((10 + 10 + 10) + (10 + 10 + 2) + (10 + 2 + 3) + (2 + 3))
+      val game = new BowlingGameFun
+      game.roll(10)
+      game.roll(10)
+      game.roll(10)
+      game.roll(2)
+      game.roll(3)
+      game.score should be((10 + 10 + 10) + (10 + 10 + 2) + (10 + 2 + 3) + (2 + 3))
     }
     "not add additional rolls if they were not played" in {
-      BowlingGameFun.score(List(1, 1, 10)) should be((1 + 1) + 10)
+      val game = new BowlingGameFun
+      game.roll(1)
+      game.roll(1)
+      game.roll(10)
+      game.score should be((1 + 1) + 10)
     }
   }
 
-  "Spare" should {
-    "add next roll to the score" in {
-      BowlingGameFun.score(List(9, 1, 7, 3, 1, 2)) should be((9 + 1 + 7) + (7 + 3 + 1) + (1 + 2))
+  "Spare" should
+    {"add next roll to the score" in {
+      val game = new BowlingGameFun
+      game.roll(9)
+      game.roll(1)
+      game.roll(7)
+      game.roll(3)
+      game.roll(1)
+      game.roll(2)
+      game.score should be((9 + 1 + 7) + (7 + 3 + 1) + (1 + 2))
     }
-    "not add additional roll if it was not played" in {
-      BowlingGameFun.score(List(1, 1, 8, 2)) should be((1 + 1) + (8 + 2))
+      "not add additional roll if it was not played" in {
+        val game = new BowlingGameFun
+        game.roll(1)
+        game.roll(1)
+        game.roll(8)
+        game.roll(2)
+        game.score should be((1 + 1) + (8 + 2))
+      }
     }
-  }
 
   "Tenth frame" should {
-    "for strike, give 2 bonus rolls" in {
-      BowlingGameFun.score(List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10)) should be(30)
+    "give 30 points for three strikes" in {
+      val game = new BowlingGameFun
+      (1 to 18).foreach(i => game.roll(0))
+      game.roll(10)
+      game.roll(10)
+      game.roll(10)
+      game.score should be(30)
     }
-    "for spare, add one bonus roll" in {
-      BowlingGameFun.score(List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 10)) should be(20)
+    "add one roll for spare" in {
+      val game = new BowlingGameFun
+      (1 to 18).foreach(i => game.roll(0))
+      game.roll(9)
+      game.roll(1)
+      game.roll(10)
+      game.score should be(20)
     }
   }
 
   "Perfect game" should {
     "score 300 for 12 strikes (10 regular and 2 bonus)" in {
-      BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10)) should be(300)
+      val game = new BowlingGameFun
+      (1 to 12).foreach(i => game.roll(10))
+      game.score should be(300)
     }
   }
 
-  "11 strikes" should {
-    "score 290 for 11 strikes (10 regular and 1 bonus,1 bonus to go)" in {
-      BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10)) should be(290)
-    }
-  }
-
-  "10 strikes" should {
-    "score 270 for 10 strikes (10 regular and 2 bonus to go)" in {
-      BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 10)) should be(270)
+  "Unfinished perfect game" should {
+    "score 290 for 11 strikes (10 regular and 1 bonus, 1 bonus to go)" in {
+      val game = new BowlingGameFun
+      (1 to 11).foreach(i => game.roll(10))
+      game.score should be (290)
     }
   }
 
   "A roll in finished game" should {
-    "not be allowed in a perfect game" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1))
-      }
-    }
-
-    "not be allowed in a spare last frame" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 9, 1, 10, 1))
-      }
-    }
-    "not be allowed in a standard last frame" in {
-      intercept[IllegalArgumentException] {
-        BowlingGameFun.score(List(10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1))
-      }
+    "not be aloowed" in {
+      val game = new BowlingGameFun
+      (1 to 12).foreach(i => game.roll(10))
+      game.roll(1)
+      intercept[IllegalArgumentException] { game.score }
     }
   }
 }
