@@ -9,7 +9,6 @@ class BowlingGame {
   type Roll = Int
 
   private var frames: List[Frame] = List[Frame]()
-
   private var bonus1: Option[Roll] = None
   private var bonus2: Option[Roll] = None
 
@@ -23,24 +22,28 @@ class BowlingGame {
         frames.head.strike && isPlayed(bonus2))
   }
 
-  private case class Frame(roll1: Roll, var roll2: Option[Roll] = None) {
+  private case class Frame(roll1: Roll) {
+    var roll2: Option[Roll] = None
+
+    def setRoll2(pins: Int) = {
+      roll2 = Some(pins)
+      require(sum <= 10, "Number of pins within 1 frame must not exceed 10")
+    }
+
     def sum = roll1 + roll2.getOrElse(0)
 
-    val strike = roll1 == 10;
+    val strike = roll1 == 10
 
     def spare = !strike && sum == 10
 
     def frameFinished = strike || roll2.isDefined
-
-    def validateRoll = sum <= 10
   }
 
   def roll(pins: Roll) {
     require(!gamefinished, "Rolls for a finished game are not allowed")
     require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
     if (frames.size > 0 && !frames.head.frameFinished) {
-      frames.head.roll2 = Some(pins)
-      require(frames.head.validateRoll, "Number of pins within 1 frame must not exceed 10")
+      frames.head.setRoll2(pins)
     } else if (frames.size < 10) {
       frames = Frame(pins) :: frames
     } else if (!isPlayed(bonus1)) {
