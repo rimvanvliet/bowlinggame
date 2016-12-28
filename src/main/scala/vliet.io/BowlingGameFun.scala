@@ -4,14 +4,12 @@ package vliet.io
   * Created by ruud on 21/12/2016.
   *
   */
-class BowlingGameFun {
+class BowlingGameFun(rolls: List[Int] = List[Int]()) {
 
-  type Roll = Int
 
-  private var rolls: List[Roll] = List.empty[Roll]
-  def roll(pins: Roll): Unit = {
+  def roll(pins: Int): BowlingGameFun = {
     require(pins >= 0 && pins <= 10, "Number of pins must be between 0 and 10")
-    rolls = rolls :+ pins
+    new BowlingGameFun(rolls :+ pins)
   }
 
   def score(): Int = {
@@ -19,7 +17,7 @@ class BowlingGameFun {
     scoreAcc(rolls, 0, 10)
   }
 
-  private def scoreAcc(rolls: List[Roll], acc: Int, framesLeft: Int): Int = {
+  private def scoreAcc(rolls: List[Int], acc: Int, framesLeft: Int): Int = {
     if (framesLeft == 0) acc
     else rolls match {
       case Nil => acc
