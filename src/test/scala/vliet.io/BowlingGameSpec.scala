@@ -9,13 +9,6 @@ import org.scalatest.{Matchers, WordSpec}
 
 class BowlingGameSpec extends WordSpec with Matchers {
 
-  "First roll" should {
-    "store pins as roll1 and () as roll2" in {
-      val game = new BowlingGame
-      game.roll(4)
-      game.frames.head.roll1 should be (4)
-    }
-  }
 
   "Number of pins in a roll" should {
     "be between 0 and 10" in {
@@ -25,32 +18,11 @@ class BowlingGameSpec extends WordSpec with Matchers {
   }
 
   "Second roll" should {
-    "set pins as roll2 to the last rolls element" in {
-      val game = new BowlingGame
-      game.roll(4)
-      game.roll(2)
-      game.frames.head.roll1 should be(4)
-      game.frames.head.roll2.getOrElse(0) should be (2)
-    }
     "not pass 10 pins for a single Frame" in {
       val game = new BowlingGame
       game.roll(8)
       intercept[IllegalArgumentException] { game.roll(3) }
 
-    }
-  }
-
-  "Four roles" should {
-    "be stored as two frame elements" in {
-      val game = new BowlingGame
-      game.roll(1)
-      game.roll(2)
-      game.roll(3)
-      game.roll(4)
-      game.frames.tail.head.roll1 should be(1)
-      game.frames.tail.head.roll2.getOrElse(0) should be(2)
-      game.frames.head.roll1 should be(3)
-      game.frames.head.roll2.getOrElse(0) should be(4)
     }
   }
 
@@ -68,11 +40,6 @@ class BowlingGameSpec extends WordSpec with Matchers {
   }
 
   "Strike" should {
-    "set 0 as roll2" in {
-      val game = new BowlingGame
-      game.roll(10)
-      game.frames.head.roll1 should be(10)
-    }
     "add next two rolls (not strikes) to the score" in {
       val game = new BowlingGame
       game.roll(10)
